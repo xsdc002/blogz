@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, flash
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -7,10 +7,22 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:build-a-bl
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
-#######start form models
+
+############################################################
+############### Start Form Models ######################
+############################################################
 
 
 
+############################################################
+############### End Form Models ########################
+############################################################
+
+
+
+############################################################
+############### Start Datebase Models ######################
+############################################################
 class Blog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -20,52 +32,71 @@ class Blog(db.Model):
     def __init__(self, title, body):
         self.title = title
         self.body = body
+############################################################
+############### End Datebase Models ########################
+############################################################
 
-###### end form models
 
 
-######start routing
 
-#index route
+############################################################
+############### Start Routing ##############################
+############################################################
+## Index Route
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     
-    return render_template('index.html') 
+    return render_template('index.html')
 
 
 
-##blog route
+
+## Blogs Route
+@app.route('/blogs', methods=['GET', 'POST'])
 @app.route('/blogs', methods=['GET', 'POST'])
 def blogs(title='', body=''):
 
     if title != '':
         return render_template('blogs.html', title=title, body=body)
-    
-    return render_template('blogs.html')
 
-###post route
+    else:
+        
+        posts = db.session.query(Blog).limit(50)
+        return render_template('blogs.html', posts=posts)
+
+
+
+## Post Route ############
 @app.route('/posts', methods=['GET', 'POST'])
 def posts():
-   
+       
     if request.method == 'POST':
-
-        app.logger.debug('The request made was', request.method)
 
         #grabbing variables with the values from the form
         title = request.form['title']
         body = request.form['body']
-        
+
+        post = Blog(title, body)
+
+        db.session.add(post)
+        db.session.commit()
+
+        flash('Your blog has been posted!')
         #left hand assignment is what the page will look for and how to call that value
         return render_template('blogs.html', title=title, body=body)
 
     
     return render_template('posts.html')
+        
+
+############################################################
+############### End Routing ################################
+############################################################
 
 
-
-#####end routing
 
 if __name__ == '__main__':
-    app.run()
+    app.secret_key = "secretkey"
+    app.run(debug=True)

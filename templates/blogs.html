@@ -1,28 +1,35 @@
 {% extends "base.html" %}
 
+
 {% block content %}
 
 <div class="row">
     <div class="col">
     </div>
-    <div class="col">
-            <br>
-            <br>
-            <h1>This is my blogs page</h1>
-            <br>
-            <br>
-            
-            <h3>{{ title }}</h3>
-            <br>
-            <p>{{ body }}</p>
-
-    </div>
-
-  <div>
 
     <div class="col">
+        <br>
+        <br>
+        <h1>This is my Blogs Page</h1>
+        <br>
+        <br>
+        <h3>Title: {{ title }}</h3>
+        <br>
+        <p>Post: {{ body }}</p>
 
+        {% if posts != none %}
+            {% for post in posts %}
+
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.body }}</p>
+            <br>
+
+            {% endfor %}
+        {% endif %}
     </div>
-  </div>
+
+    <div class="col">
+    </div>
+</div>
 
 {% endblock %}
