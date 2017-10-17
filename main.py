@@ -7,6 +7,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:build-a-bl
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+#######start form models
+
+
+
 class Blog(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -17,67 +21,51 @@ class Blog(db.Model):
         self.title = title
         self.body = body
 
-blogs=[]
-@app.route('/')
+###### end form models
+
+
+######start routing
+
+#index route
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
-    blogs=Blog.query.order_by("id dec").all()
-    return render_template('index.html', title = 'Build a Blog', blogs=blogs)
-
-@app.route('/addblog')
-def addblog():
-    return render_template('add a blog entry.html', title = 'add blog')
-
-@app.route('/', methods=['POST', 'GET'])
-def index():
-
-    if request.method == 'POST':
-        title = request.form['title']
-        body = request.form['body']
-        new_blog = Blog(title, body)
-        db.session.add(new_blog)
-        db.session.commit()
-        
-    blogs = Blog.query.all()
-
-    return render_template('main blog page.html', blogs=blogs)
-
-@app.route('/addblog', methods=['POST', 'GET'])
-def ilikedogs():
-    if request.method == 'POST':
-        blogid = request.args.get('id')
-        title = request.form['title']
-        body = request.form['body']
-        new_blog = Blog(title, body)
-        db.session.add(new_blog)
-        db.session.commit()
-        blogs = ''
-        if blogid is None:
-            blogs = Blog.query.all()
-            return redirect('/')
-        else:
-            blog=Blog.query.get(int(blogid))
-            return render_template('add a blog entry.html', blogs=[blog])
-        
-        return render_template("add a new post.html")
-    @app.route('/blogpage', methods=['POST', 'GET'])
-    def poo():
-        if request.method == 'POST':
-            blogid = int(request.form['blogid'])
-            title = Blog.query.get('title')
-            body = Blog.query.get('body')
-            new_blog = Blog(title, body)
-            db.session.add(new_blog)
-            db.session.commit()
-            
-            return render_template('add a blog entry.html', newblog=newblog)
     
-        if request.method == 'GET':
-            blogid = request.args.get('id')
-            if blogid is None:
-                blogs = Blog.query.all()
-                return redirect('/')
-            else:
-                blog = Blog.query.get(int(blogid))
-                return render_template('Main blog page.html', blogs=[blog])
+    return render_template('index.html') 
+
+
+
+##blog route
+@app.route('/blogs', methods=['GET', 'POST'])
+def blogs(title='', body=''):
+
+    if title != '':
+        return render_template('blogs.html', title=title, body=body)
+    
+    return render_template('blogs.html')
+
+###post route
+@app.route('/posts', methods=['GET', 'POST'])
+def posts():
+   
+    if request.method == 'POST':
+
+        app.logger.debug('The request made was', request.method)
+
+        #grabbing variables with the values from the form
+        title = request.form['title']
+        body = request.form['body']
+        
+        #left hand assignment is what the page will look for and how to call that value
+        return render_template('blogs.html', title=title, body=body)
+
+    
+    return render_template('posts.html')
+
+
+
+#####end routing
+
 if __name__ == '__main__':
     app.run()
