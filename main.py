@@ -88,6 +88,9 @@ def signup():
     email_error = ''
     username_error = ''
 
+    errors = {}
+    exists = self.get_user_by_name(username)
+
     #password tests
     if len(password) < 3:
         password_error = 'Password must be greater than 3 characters'
@@ -136,7 +139,7 @@ def signup():
     else:
         return render_template('index.html', password_error=password_error, verify_error=verify_error, email=email, email_error=email_error, username=username, username_error=username_error)
 
-    render_template('blogs.html')
+    render_template('blogs/newpost.html')
 
 
 
