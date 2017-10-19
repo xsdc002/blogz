@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 
 <div class="row">
     <div class="col">
+            
     </div>
 
     <div class="col">
@@ -15,13 +15,16 @@
         <br>
         <h3>Title: {{ title }}</h3>
         <br>
-        <p>Post: {{ body }}</p>
+        <p class="user">Posted by: <a href="/blog?id={{post.id}}">{{ posts.owner.username  }}</a></p>
+        <br>
+        <p>Posts: {{ body }}</p>
 
         {% if posts != none %}
             {% for post in posts %}
 
-            <h3>{{ post.title }}</h3>
-            <p>{{ post.body }}</p>
+            <h3>{{ posts.title }}</h3>
+            <p>{{ posts.body }}</p>
+            <p>{{posts.user}}</p>
             <br>
 
             {% endfor %}

@@ -1,9 +1,7 @@
 
 {% extends "base.html" %} {% block content%}
 
-
-
-<div class="row">
+    <div class="row">
     <div class="col">
     </div>
     <div class="col">
@@ -21,9 +19,12 @@
 
             <div class="form-group">
                 <textarea name="body" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Whats on your mind?"></textarea>
+            
             </div>
             <input class="btn btn-primary" type="submit" value="Post">
         </form>
+
+        <p class='user'>Posted by: <a href="/blog?userid={{user_id}}">{{  user  }}</a></p>
     </div>
     <div class="col">
     </div>
