@@ -66,32 +66,31 @@ def login():
         password = request.form['password']
         username = request.form['username']
         user = User.query.filter_by(username=username).first()
-
+        #return render_template('usersignupwelcome.html')
+        
+    
         if user and check_password(password, user.password):
             session['username'] = username
-            return redirect('/posts')
+            return redirect('posts.html')
         if not user:
             return render_template('login.html', username_error="Incorrect Username")
         else:
-            return render_template('login.html', password_error="Incorrect Password")
+            return render_template('login.html', password_error="Incorrect Username or Password")
     return render_template('login.html')
-
 ###signup route
-@app.route('/index', methods=['GET', 'POST'])
+# 
+###signup route
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     password = (request.form['password'])
     verify = (request.form['verify'])
-    email = (request.form['email'])
     username = (request.form['username'])
     password_error = ''
     verify_error = ''
-    email_error = ''
-    username_error = ''
+    username_error = ''    
+    signup = request.form['signup']
 
-    errors = {}
-    exists = self.get_user_by_name(username)
-
-    #password tests
+     #password tests
     if len(password) < 3:
         password_error = 'Password must be greater than 3 characters'
     elif len(password) > 20:
@@ -115,7 +114,7 @@ def signup():
     #email tests
    
     if len(email) > 0:
-        if ' ' in email:
+        if ' ' in email: 
             email_error = 'invalid email, email cannot contain any spaces'
         elif email.count('@') > 1 in email:
             email_error = 'invalid email'
@@ -131,65 +130,45 @@ def signup():
         username_error = 'username must be greater than 20 characters'
     elif ' ' in username:
         username_error = 'invalid username, email cannot contain any spaces'
-    if exists:
-        username_error = "Username already exists."
-        
-    if not username_error and not password_error and not verify_error and not email_error and not exists:
-        return render_template('usersignupwelcome.html', username=username)
-    else:
-        return render_template('index.html', password_error=password_error, verify_error=verify_error, email=email, email_error=email_error, username=username, username_error=username_error)
 
-    render_template('blogs/newpost.html')
+    if request.method == 'POST' and form.validate():
+        user = User(form.username.data, form.password.data)
+        db_session.add(user)
+        flash('Thanks for registering')
+        return redirect(login.html('login'))
+    return render_template('signup.html', form=form)
 
 
+####newpost route
+@app.route('/newpost')
+def post():
+    return render_template('newpost.html', title="New Post")
 
-        #verify registration
-        # #######add in if statement to check that the user has registered and is in the database##########
-    #     if not username_error and not password_error and not verify_error and not email_error:
-    #     return render_template('usersignupwelcome.html', username=username)
-    # else:
-    #     return render_template('index.html', password_error=password_error, verify_error=verify_error, email=email, email_error=email_error, username=username, username_error=username_error)
-
-    # render_template('blogs.html') 
-
-## Blogs Route
-@app.route('/blogs', methods=['GET', 'POST'])
-@app.route('/blogs', methods=['GET', 'POST'])
-def blogs(title='', body='', owner=''):
-
-    if title != '':
-        return render_template('blogs.html', title=title, body=body)
-
-    else:
-        
-        posts = db.session.query(Blog).limit(50)
-        return render_template('blogs.html', posts=posts)
-
-
-
-## Post Route 
-@app.route('/posts', methods=['GET', 'POST'])
-def posts():
-       
-    if request.method == 'POST':
-
+## Post Route
+@app.route('/newpost', methods=['GET', 'POST'])
+def newpost():
+    if request.method == 'POST':  
+    
         #grabbing variables with the values from the form
         title = request.form['title']
         body = request.form['body']
         owner = User.query.filter_by(username=session['username']).first()
+        #post = Blog(title, body, owner)
 
-        post = Blog(title, body, owner)
-
-        db.session.add(post)
+    if request.method == 'POST':
+        post = Blog(title, body, owner)  
+        new_post = Blog(title, body, owner)
+        db.session.add(new_post)
         db.session.commit()
         page_id = new_post.id
-
+        return redirect("/blog?id={0}".format(page_id))
+    else:
         flash('Your blog has been posted!')
         #left hand assignment is what the page will look for and how to call that value
-        return render_template('blogs.html', title=title, body=body, owner=owner)
+        return render_template('newpost.html', title=title, body=body, owner=owner)
 
     
-    return render_template('posts.html')
+    #return render_template('posts.html')
 
 
 
