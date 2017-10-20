@@ -111,18 +111,6 @@ def signup():
     elif ' ' in verify:
         verify_error = 'verify cannot contain any spaces'
 
-    #email tests
-   
-    if len(email) > 0:
-        if ' ' in email: 
-            email_error = 'invalid email, email cannot contain any spaces'
-        elif email.count('@') > 1 in email:
-            email_error = 'invalid email'
-        elif email.count('.') < 1 in email:
-            email_error = 'invalid email'
-        elif ' ' in email:
-            email_error = 'invalid email, email cannot contain spaces'
-
     #username tests
     if len(username) < 3:
         username_error = 'username must be greater than 3 characters'
