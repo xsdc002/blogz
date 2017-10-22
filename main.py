@@ -77,15 +77,15 @@ def login():
         else:
             return render_template('login.html', password_error="Incorrect Username or Password")
     return render_template('login.html')
+
 ###signup route
-# 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         password = request.form['password']
         verify = request.form['verify']
         username = request.form['username']
-        exist = User.filter_by(username=username).first()
+        exist = User.query.filter_by(username=username).first()
         password_error = ''
         verify_error = ''
         username_error = ''
@@ -95,13 +95,13 @@ def signup():
         elif len(username) <= 3 or len(username) > 20:
             username_error = "Username must be between 3 and 20 characters long."
         elif " " in username:
-            username_error = "Username cannot contain any spaces."
+            username_error = "Username cannot have any spaces."
         if password == "":
             password_error = "Please enter a password."
         elif len(password) <= 3:
-            password_error = "Password must be greater than 3 characters long."
+            password_error = "Password must be at least 3 characters long."
         elif " " in password:
-            password_error = "Password cannot contain any spaces."
+            password_error = "Password cannot have any spaces."
         if password != verify or verify == "":
             verify_error = "Passwords do not match."
         if exist:
@@ -116,46 +116,46 @@ def signup():
             session['username'] = username
             return redirect('/newpost')
         else:
-            return render_template('signup.html', username=username, form=form)
+            return render_template('signup.html', username=username)
     return render_template('signup.html')
 
-####password tests
-    if len(password) < 3:
-        password_error = 'Password must be greater than 3 characters'
-    elif len(password) > 20:
-        password_error = 'Password must be less than 20 characters'
+# ####password tests
+#     if len(password) < 3:
+#         password_error = 'Password must be greater than 3 characters'
+#     elif len(password) > 20:
+#         password_error = 'Password must be less than 20 characters'
 
-    elif ' ' in password:
-        password_error = 'Password cannot contain any spaces'
+#     elif ' ' in password:
+#         password_error = 'Password cannot contain any spaces'
    
-    #verify tests
-    if len(verify) < 3:
-        verify_error = 'verify must be greater than 3 characters'
-    elif len(verify) > 20:
-        verify_error = 'verify must be greater than 20 characters'
-    elif verify != password:
-        verify_error = 'passwords do not match'
-    elif ' ' in verify:
-        verify_error = 'verify cannot contain any spaces'
+#     #verify tests
+#     if len(verify) < 3:
+#         verify_error = 'verify must be greater than 3 characters'
+#     elif len(verify) > 20:
+#         verify_error = 'verify must be greater than 20 characters'
+#     elif verify != password:
+#         verify_error = 'passwords do not match'
+#     elif ' ' in verify:
+#         verify_error = 'verify cannot contain any spaces'
 
-    #username tests
-    if len(username) < 3:
-        username_error = 'username must be greater than 3 characters'
-    elif len(username) > 20:
-        username_error = 'username must be greater than 20 characters'
-    elif ' ' in username:
-        username_error = 'invalid username, username cannot contain any spaces'
-    if exists:
-        username_error = "Username already exists."
+#     #username tests
+#     if len(username) < 3:
+#         username_error = 'username must be greater than 3 characters'
+#     elif len(username) > 20:
+#         username_error = 'username must be greater than 20 characters'
+#     elif ' ' in username:
+#         username_error = 'invalid username, username cannot contain any spaces'
+#     if exists:
+#         username_error = "Username already exists."
         
-    if not username_error and not password_error and not verify_error and not exists:
-        return render_template('usersignupwelcome.html', username=username)
-    else:
-        return render_template('index.html', password_error=password_error, verify_error=verify_error, username=username, username_error=username_error)
+#     if not username_error and not password_error and not verify_error and not exists:
+#         return render_template('usersignupwelcome.html', username=username)
+#     else:
+#         return render_template('index.html', password_error=password_error, verify_error=verify_error, username=username, username_error=username_error)
 
-    render_template('blogs.html')
+#     render_template('blogs.html')
 
-
+####################################################################################################################################################################################
 
         #verify registration
         # #######add in if statement to check that the user has registered and is in the database##########
