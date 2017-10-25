@@ -1,11 +1,13 @@
-from flask import Flask, redirect, render_template, request, flash
+from flask import Flask, redirect, render_template, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:blogz@localhost:3306/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = "secretkey"
 
 
 ############### Start Form Models 
@@ -30,11 +32,12 @@ class Blog(db.Model):
         self.title = title
         self.body = body
         self.owner = owner
+        
 
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20))
+    username = db.Column(db.String(20), unique=True)
     password = db.Column(db.String(20))
     blogs = db.relationship('Blog', backref='owner')
 
@@ -48,150 +51,156 @@ class User(db.Model):
 
 
 ############### Start Routing 
+###must be signed in to go to certain pages###
+
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
 ## Index Route
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/home', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
+@app.route('/', methods=['POST', 'GET'])
+@app.route('/home', methods=['POST', 'GET'])
+@app.route('/index', methods=['POST', 'GET'])
 def index():
-    
     return render_template('index.html')
 
 ####login route
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST', 'GET'])
+
 def login():
-    username_error = ""
-    password_error = ""
 
     if request.method == 'POST':
-        password = request.form['password']
         username = request.form['username']
+        password = request.form['password']
         user = User.query.filter_by(username=username).first()
-        #return render_template('usersignupwelcome.html')
+        if user and user.password == password:
+            session['username'] = user.username
+            flash('You are now signed in')
+            print(session)
+            return redirect('/')
         
-    
-        if user and check_password(password, user.password):
-            session['username'] = username
-            return redirect('posts.html')
-        if not user:
-            return render_template('login.html', username_error="Incorrect Username")
-        else:
-            return render_template('login.html', password_error="Incorrect Username or Password")
+        flash('Please recheck username or password.')
+        return render_template('login.html')
+    elif request.method == 'GET':
+        return render_template('login.html')
+            
     return render_template('login.html')
 
+
 ###signup route
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['POST', 'GET'])
 def signup():
     if request.method == 'POST':
-        password = request.form['password']
-        verify = request.form['verify']
+        # signup = request.form['signup']
         username = request.form['username']
-        exist = User.query.filter_by(username=username).first()
-        password_error = ''
-        verify_error = ''
-        username_error = ''
-
-        if username == "":
-            username_error = "Please enter a username."
-        elif len(username) <= 3 or len(username) > 20:
-            username_error = "Username must be between 3 and 20 characters long."
-        elif " " in username:
-            username_error = "Username cannot have any spaces."
-        if password == "":
-            password_error = "Please enter a password."
-        elif len(password) <= 3:
-            password_error = "Password must be at least 3 characters long."
-        elif " " in password:
-            password_error = "Password cannot have any spaces."
-        if password != verify or verify == "":
-            verify_error = "Passwords do not match."
-        if exist:
-            username_error = "Username already taken."
+        password = request.form['password']
+        verify_password = request.form['verify_password']
        
+ #password tests
+        if password == '' or len(password) < 3 or len(password) > 20 or ' ' in password:
+            error = 'Passwords must be between 3 and 20 characters and must not contain spaces'
+            return render_template('signup.html', error=error)
 
+        #username tests
+        if username == '' or len(username) < 3 or len(username) > 20 or ' ' in username:
+            error = 'Usernames must be between 3 and 20 characters and must not contain spaces'
+            return render_template('signup.html', error=error)
 
-        if len(username) > 3 and len(password) > 3 and password == verify and not exist:
-            new_user = User(username, password)
-            db.session.add(new_user)
-            db.session.commit()
-            session['username'] = username
-            return redirect('/newpost')
-        else:
-            return render_template('signup.html', username=username)
+    ###verif)y password 
+        if not verify_password == password:
+            error = 'Passwords do not match'
+            return render_template('signup.html', error=error)
+        user = User.query.filter_by(username=username).first()
+        if user:
+            flash('That username already exists')
+            return render_template('signup.html')
+
+        user = User(username, password)
+        db.session.add(user)
+        db.session.commit()
+
+        session['username'] = user.username
+        flash('You are now signed in')
+        return render_template('index.html')   
     return render_template('signup.html')
+              
 
-# ####password tests
-#     if len(password) < 3:
-#         password_error = 'Password must be greater than 3 characters'
-#     elif len(password) > 20:
-#         password_error = 'Password must be less than 20 characters'
+@app.route('/blog', methods=['POST', 'GET'])
+def blog(title='', body='', owner=''):
 
-#     elif ' ' in password:
-#         password_error = 'Password cannot contain any spaces'
-   
-#     #verify tests
-#     if len(verify) < 3:
-#         verify_error = 'verify must be greater than 3 characters'
-#     elif len(verify) > 20:
-#         verify_error = 'verify must be greater than 20 characters'
-#     elif verify != password:
-#         verify_error = 'passwords do not match'
-#     elif ' ' in verify:
-#         verify_error = 'verify cannot contain any spaces'
-
-#     #username tests
-#     if len(username) < 3:
-#         username_error = 'username must be greater than 3 characters'
-#     elif len(username) > 20:
-#         username_error = 'username must be greater than 20 characters'
-#     elif ' ' in username:
-#         username_error = 'invalid username, username cannot contain any spaces'
-#     if exists:
-#         username_error = "Username already exists."
+    if title != '':
         
-#     if not username_error and not password_error and not verify_error and not exists:
-#         return render_template('usersignupwelcome.html', username=username)
-#     else:
-#         return render_template('index.html', password_error=password_error, verify_error=verify_error, username=username, username_error=username_error)
+        return render_template('blog.html', title=title, body=body)
+    
+    blog_id = request.args.get('id')
+    user_id = request.args.getr('userid')
+    posts = db.session.query(Blog).limit(50)
 
-#     render_template('blogs.html')
+    if blog_id:
+        posts = Blog.query.filter_by(id=blog_id).first()
+        return render_template("posts.html", title=posts.title, body=posts.body, user=posts.owner.username, user_id=posts.owner_id)
+    if user_id:
+        entries = Blog.query.filter_by(owner_id=user_id).all()
+        return render_template('user.html', entries=entries)
 
-####################################################################################################################################################################################
+    return render_template('blogs.html', posts=posts)
 
-        #verify registration
-        # #######add in if statement to check that the user has registered and is in the database##########
-    #     if not username_error and not password_error and not verify_error and not email_error:
-    #     return render_template('usersignupwelcome.html', username=username)
-    # else:
-    #     return render_template('index.html', password_error=password_error, verify_error=verify_error, email=email, email_error=email_error, username=username, username_error=username_error)
-
-    # render_template('blogs.html') 
-        
-        #post = Blog(title, body, owner)
-
+# New post route. Redirects to post page.
+## Post Route 
+@app.route('/posts', methods=['GET', 'POST'])
+def posts():
+       
     # if request.method == 'POST':
-    #     post = Blog(title, body, owner)  
-    #     new_post = Blog(title, body, owner)
-    #     db.session.add(new_post)
-    #     db.session.commit()
-    #     page_id = new_post.id
-    #     return redirect("/blog?id={0}".format(page_id))
-    # else:
+
+        #grabbing variables with the values from the form
+        title = request.form['title']
+        body = request.form["body"]
+        owner = User.query.filter_by(username=session['username']).first()
+
+        # post = Blog(title, body)
+        title_error = ""
+        body_error = ""
+
+        if title == "":
+            title_error = "You must have a title."
+        if body == "":
+            body_error = "You must have a body."
+
+        if not title_error and not body_error:
+            posts = Blog(title, body, owner)
+            db.session.add(posts)
+            db.session.commit()
+            page_id = posts.id
+            return redirect ("blog?id={0}".format(page_id))
+        
+        else:
+            return render_template("posts.html", title=title, body=body, title_error=title_error, body_error=body_error)
+
+
+
     #     flash('Your blog has been posted!')
     #     #left hand assignment is what the page will look for and how to call that value
-    #     return render_template('newpost.html', title=title, body=body, owner=owner)
+    #     return render_template('blogs.html', title=title, body=body)
 
     
-    #return render_template('posts.html')
-
-
+    # return render_template('posts.html')
 
 ######logout route##############
 @app.route('/logout')
 def logout():
-    del session['username']
-    return redirect('/')
+    if 'username' in session:
+        del session['username']
+        flash('Thanks for visiting!')
+        return render_template('login.html')
+
+    flash('You are not logged in')
+    return render_template('login.html')
+
+
+
 ############### End Routing 
 
 if __name__ == '__main__':
-    app.secret_key = "secretkey"
     app.run(debug=True)

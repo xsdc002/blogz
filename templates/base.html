@@ -2,6 +2,11 @@
 <html>
     <head>
         <title>My Blog</title>
+        <style>
+            .error {
+                color: red;
+            }
+        </style>
     </head>
 <body>  
     <head>
@@ -14,26 +19,33 @@
 
     </head>
     <nav>
-        <a href="/index">Home</a>
-        <a href="/blogs">Blogs</a>
-        <a href="/posts">Post a Blog</a>
+        <ul id="user-account">
+            <li>
+        
+                <a href="/index">Home</a>
+                <a href="/blogs">Blogs</a>
+                <a href="/posts">Post a Blog</a>
+                <a href="/signup">Signup</a>
+            </li>
+        </ul>
     </nav>
+    <h1>blog users!</h1>
     <div class="col" align="right">
             <a href="/login">Login</a>
 
             <a href="/logout">Logout</a>
     </div>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <ul class=flashes>
-      {% for category, message in messages %}
-        <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-      </ul>
+    {% with messages = get_flashed_messages(with_categories = True) %}
+    {% if messages %}    
+        <ul class=flashes>
+        {% for category, message in messages %}
+            <li class="{{ category  }}">{{message}}"</li>
+        {% endfor %}
+        </ul>
     {% endif %}
-  {% endwith %}
-    
+    {% endwith %}
+         
     {% block content %}
     {% endblock %}
     

@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% block content%}
+{% extends "base.html" %} 
+
+{% block content%}
 
 
 <head>
@@ -12,44 +14,37 @@
     </head>
     <body>
             
-<form method="POST">
-        <table>
-            <tbody> 
-                <h1>User Signup</h1>
-                <br>
-                <br>
-                <tr>
-                    <td>
-                        <label for="username">Username</label>
-                    </td>
-                    <td>
-                        <input type="text" name="username" value="{{username}}"/>
-                        <span class="error">{{username_error}}</span>
+            <div class="row">
+                    <div class="col">
+                    </div>
+                    <div class="col">
                         <br>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="password">Password</label>
-                    </td>
-                    <td>
-                        <input type="password" name="password"/>
-                        <span class="error">{{password_error}}</span>
-                    </td>
-                </tr>
-                <tr>
-                </tr>
-                    <td>
-                        <label for="verify">Verify Password</label>
-                    </td>
-                    <td>
-                        <input type="password" name="verify"/>
-                        <span class="error">{{verify_error}}</span>
-                    </td>
-                <tr>
-                </tr>
-            </tbody>
-        </table> 
-        <input type="submit" value="Submit Query"/>
-    </form>
+                        <br>
+                        <h1>Please Signup</h1>
+                        <br>
+                        <br>
+                        <form name="signup" method="post">
+                            <input type="hidden">
+                            <div class="form-group">
+                                <label for="exampleFormControlInput1">{{error}}</label>
+                                <input type="text" name="username" class="form-control" id="exampleFormControlInput1" placeholder="Username">
+                            </div>
+                
+                            <div class="form-group">
+                                <input type="password" name="password" class="form-control" id="exampleFormControlInput1" placeholder="Password">
+                                </textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" name="verify_password" class="form-control" id="exampleFormControInput1" placeholder="Verify Password">
+                                </textarea>
+                            </div>
+                            <input class="btn btn-primary" type="submit" value="Sign In">
+                        </form>
+                    </div>
+                    <div
+                        class="col">
+                    </div>
+                
+            </div>
+        </body>
     {% endblock %}

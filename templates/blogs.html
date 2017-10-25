@@ -15,16 +15,18 @@
         <br>
         <h3>Title: {{ title }}</h3>
         <br>
-        <p class="user">Posted by: <a href="/blog?id={{post.id}}">{{ posts.owner.username  }}</a></p>
         <br>
         <p>Posts: {{ body }}</p>
+        <br>
+        <br>
+        <p>Posted by: {{ owner }}</p>
 
         {% if posts != none %}
             {% for post in posts %}
 
             <h3>{{ posts.title }}</h3>
             <p>{{ posts.body }}</p>
-            <p>{{posts.user}}</p>
+            <p>{{ posts.owner  ))</p>
             <br>
 
             {% endfor %}
