@@ -130,7 +130,7 @@ def blog():
         entries = Blog.query.filter_by(owner_id=user_id).all()
         return render_template('user.html', entries=entries)
 
-    return render_template('blogs.html', posts=posts)
+    return render_template('blog.html', posts=posts)
 
 # New post route. Redirects to post page.
 ## Post Route 
