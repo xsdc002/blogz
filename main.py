@@ -64,7 +64,9 @@ def require_login():
 @app.route('/home', methods=['POST', 'GET'])
 @app.route('/index', methods=['POST', 'GET'])
 def index():
-    return render_template('index.html')
+
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 ####login route
 @app.route('/login', methods=['POST', 'GET'])
@@ -114,7 +116,7 @@ def signup():
             return render_template('signup.html', error=error)
         user = User.query.filter_by(username=username).first()
         if user:
-            flash('That username already exists')
+            flash("That username already exists")
             return render_template('signup.html')
 
         user = User(username, password)
@@ -128,15 +130,14 @@ def signup():
               
 
 @app.route('/blog', methods=['POST', 'GET'])
-def blog(title='', body='', owner=''):
-
-    if title != '':
-        
-        return render_template('blog.html', title=title, body=body)
-    
+def blog():
+    # title = request.form['title']
+    # body = request.form["body"]
     blog_id = request.args.get('id')
-    user_id = request.args.getr('userid')
+    user_id = request.args.get('userid')
     posts = db.session.query(Blog).limit(50)
+    # page_id = Blog.query.get('id')
+    
 
     if blog_id:
         posts = Blog.query.filter_by(id=blog_id).first()
@@ -149,24 +150,30 @@ def blog(title='', body='', owner=''):
 
 # New post route. Redirects to post page.
 ## Post Route 
-@app.route('/posts', methods=['GET', 'POST'])
+@app.route('/posts')
 def posts():
-       
+    return render_template('posts.html', title="Posts")
+
+@app.route('/posts', methods=['GET', 'POST'])
+def newposts():
+         
     # if request.method == 'POST':
 
         #grabbing variables with the values from the form
         title = request.form['title']
-        body = request.form["body"]
-        owner = User.query.filter_by(username=session['username']).first()
+        body = request.form['body']
+        owner = User.query.filter_by(username=session['username']).first() 
 
-        # post = Blog(title, body)
+        
+
         title_error = ""
         body_error = ""
 
         if title == "":
-            title_error = "You must have a title."
+            title_error = flash("Y'all need a title for your blog.")
+            
         if body == "":
-            body_error = "You must have a body."
+            body_error = flash("Y'all need some content for your blog, make it interesting.")
 
         if not title_error and not body_error:
             posts = Blog(title, body, owner)
@@ -174,18 +181,11 @@ def posts():
             db.session.commit()
             page_id = posts.id
             return redirect ("blog?id={0}".format(page_id))
-        
+
         else:
             return render_template("posts.html", title=title, body=body, title_error=title_error, body_error=body_error)
 
 
-
-    #     flash('Your blog has been posted!')
-    #     #left hand assignment is what the page will look for and how to call that value
-    #     return render_template('blogs.html', title=title, body=body)
-
-    
-    # return render_template('posts.html')
 
 ######logout route##############
 @app.route('/logout')

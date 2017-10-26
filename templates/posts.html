@@ -1,9 +1,29 @@
 
 {% extends "base.html" %} 
-{% block content%}
+{% block content %}
 
-    <div class="row">
+<div class="row">
         <div class="col">
+                    <table>
+            
+                    {% for blog in blogs %}
+                        <form action="/individual">
+                            <tr>
+                                <td>
+                                    <!-- <label for= "blog_id"><b> {{ blog.title }} </b></label> -->
+                                    <input type= "submit"  class= "link_button" name= "blog_title" value= "{{ blog.title }}"/>
+                                </td>
+                                <td> 
+                                    {{ blog.body }}
+                                </td>
+                                <td>
+                                    <!-- <p class="username"><a href="/blog?userid={{user.id}}">{{ user.username }}</a></p> -->
+                                </td>
+                            </tr>
+                        </form>
+                    {% endfor %}
+            
+                    </table>
         </div>
         <div class="col">
             <br>
@@ -17,14 +37,13 @@
                     <label for="exampleFormControlInput1">Blog</label>
                     <input type="text" name="title" class="form-control" id="exampleFormControlInput1" placeholder="Title">
                 </div>
-
-            <div class="form-group">
-                <textarea name="body" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Whats on your mind?"></textarea>
-            
-            </div>
-            <input class="btn btn-primary" type="submit" value="Post">
-        </form>
-        <p class='username'>Posted by: <a href="/blog?userid={{user_id}}">{{ username  }}</a></p>
+    
+                <div class="form-group">
+                    <textarea name="body" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Whats on your mind?"></textarea>
+                </div>
+                <input class="btn btn-primary" type="submit" value="Post">
+            </form>
+        <p class='username'><a href="/blog?userid={{user_id}}">{{ username  }}</a></p>
     </div>
     <div class="col">
     </div>

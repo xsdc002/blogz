@@ -1,40 +1,36 @@
 {% extends "base.html" %}
 
 {% block content %}
+      <div class="all blogs">
 
-<div class="row">
-    <div class="col">
-            
-    </div>
+        <h1>All Blog Posts</h1>
 
-    <div class="col">
-        <br>
-        <br>
-        <h1>This is my Blogs Page</h1>
-        <br>
-        <br>
-        <h3>Title: {{ title }}</h3>
-        <br>
-        <br>
-        <p>Posts: {{ body }}</p>
-        <br>
-        <br>
-        <p>Posted by: {{ owner }}</p>
+        <hr>
+        {% for blog in blogs %}
+        <form action="/individual">
+            <tr>
+                <td>
+                    <!-- <label for= "blog_id"><b> {{ blog.title }} </b></label> -->
+                    <input type= "submit"  name= "blog_title" value= "{{ blog.title }}"/>
+                </td>
+                <td> 
+                    {{ blog.body }}
+                </td>
+                <td>
+                        <p class="username"><a href="/blog?userid={{user.id}}">{{ user.username }}</a></p>
+                </td>
+            </tr>
+        </form>
+    {% endfor %}
 
-        {% if posts != none %}
-            {% for post in posts %}
+          {% for post in posts %}
+          <div class="post">
 
-            <h3>{{ posts.title }}</h3>
-            <p>{{ posts.body }}</p>
-            <p>{{ posts.owner  ))</p>
-            <br>
+            <a href="/blog?id={{post.id}}"><p><h2>{{ post.title }}</h2></p></a>
+            <p class="body-text">{{ post.body }}</p>
+            <p class="user">Posted by: <a href="/blog?userid={{post.owner_id}}">{{ post.owner.username }}</a></p>
 
-            {% endfor %}
-        {% endif %}
-    </div>
-
-    <div class="col">
-    </div>
-</div>
-
+          </div>
+          {% endfor %}
+      </div>
 {% endblock %}
