@@ -10,16 +10,7 @@ db = SQLAlchemy(app)
 app.secret_key = "secretkey"
 
 
-############### Start Form Models 
 
-
-
-
-############### End Form Models
-
-
-
-############### Start Datebase Models 
 
 class Blog(db.Model):
 
@@ -45,13 +36,6 @@ class User(db.Model):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-
-
-############### End Datebase Models 
-
-
-############### Start Routing 
-###must be signed in to go to certain pages###
 
 @app.before_request
 def require_login():
@@ -157,9 +141,7 @@ def posts():
 @app.route('/posts', methods=['GET', 'POST'])
 def newposts():
          
-    # if request.method == 'POST':
 
-        #grabbing variables with the values from the form
         title = request.form['title']
         body = request.form['body']
         owner = User.query.filter_by(username=session['username']).first() 

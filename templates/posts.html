@@ -4,26 +4,7 @@
 
 <div class="row">
         <div class="col">
-                    <table>
-            
-                    {% for blog in blogs %}
-                        <form action="/individual">
-                            <tr>
-                                <td>
-                                    <!-- <label for= "blog_id"><b> {{ blog.title }} </b></label> -->
-                                    <input type= "submit"  class= "link_button" name= "blog_title" value= "{{ blog.title }}"/>
-                                </td>
-                                <td> 
-                                    {{ blog.body }}
-                                </td>
-                                <td>
-                                    <!-- <p class="username"><a href="/blog?userid={{user.id}}">{{ user.username }}</a></p> -->
-                                </td>
-                            </tr>
-                        </form>
-                    {% endfor %}
-            
-                    </table>
+  
         </div>
         <div class="col">
             <br>
