@@ -3,19 +3,13 @@
 {% block content %}
       <div class="individual-user">
 
-        <h1>User Posts</h1>
+        <h1>one at a time</h1>
 
-
-        <hr>
-        {% for entry in entries %}
         <div class="post">
           <h2><a href="/blog?id={{entry.id}}">{{ entry.title  }}</a></h2>
           <p class="body-text">{{ entry.body }}</p>
           <p class="user">Posted by: <a href="/blog?userid={{entry.owner_id}}">{{ entry.owner.username }}</a></p>
           
 
-
-        </div>
-        {% endfor %}
       </div>
 {% endblock %}
